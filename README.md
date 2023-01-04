@@ -10,6 +10,7 @@
 <a href="https://github.com/iiDestiny/laravel-filesystem-oss"><img src="https://poser.pugx.org/iidestiny/laravel-filesystem-oss/v/stable"></a>
 <a href="https://github.com/iiDestiny/laravel-filesystem-oss"><img src="https://poser.pugx.org/iidestiny/laravel-filesystem-oss/downloads"></a>
 <a href="https://github.com/iiDestiny/laravel-filesystem-oss"><img src="https://poser.pugx.org/iidestiny/laravel-filesystem-oss/v/unstable"></a>
+<a href="https://scrutinizer-ci.com/g/iiDestiny/flysystem-oss/?branch=master"><img src="https://scrutinizer-ci.com/g/iiDestiny/flysystem-oss/badges/quality-score.png?b=master"></a>
 <a href="https://github.com/iiDestiny/laravel-filesystem-oss"><img src="https://badges.frapsoft.com/os/v1/open-source.svg?v=103"></a>
 <a href="https://github.com/iiDestiny/laravel-filesystem-oss"><img src="https://poser.pugx.org/iidestiny/laravel-filesystem-oss/license"></a>
 </p>
@@ -20,19 +21,14 @@
 <img src="https://cdn.learnku.com/uploads/images/202011/09/4430/qsECw9Ctgv.jpg!large">
 </p>
 
-## 目录
-- laravel >= 9 `composer require "iidestiny/laravel-filesystem-oss:^3.1"`
-- laravel < 9 `composer require "iidestiny/laravel-filesystem-oss:^2"`
-
 ## 扩展包要求
 
-- PHP >= 8.02
-- Laravel >= 9
+-   PHP >= 7.0
 
 ## 安装命令
 
 ```shell
-$ composer require "iidestiny/laravel-filesystem-oss:^3.1" -vvv
+$ composer require "iidestiny/laravel-filesystem-oss" -vvv
 ```
 
 ## 配置
@@ -90,6 +86,22 @@ $disk = Storage::disk('oss');
 
 // 上传
 $disk->put('avatars/filename.jpg', $fileContents);
+
+// 检查文件是否存在
+$exists = $disk->has('file.jpg');
+
+// 获取文件修改时间
+$time = $disk->lastModified('file1.jpg');
+$time = $disk->getTimestamp('file1.jpg');
+
+// 拷贝文件
+$disk->copy('old/file1.jpg', 'new/file1.jpg');
+
+// 移动文件也可改名
+$disk->move('old/file1.jpg', 'new/file1.jpg');
+
+// 获取文件内容
+$contents = $disk->read('folder/my_file.txt');
 ```
 
 以上方法可在 [laravel-filesystem-doc](https://laravel.com/docs/5.5/filesystem) 查阅
@@ -98,13 +110,16 @@ $disk->put('avatars/filename.jpg', $fileContents);
 
 ```php
 // 获取文件访问地址「公共读的 bucket 才生效」
-$url = $disk->getAdapter()->getUrl('folder/my_file.txt');
+$url = $disk->getUrl('folder/my_file.txt');
 
 // 设置文件访问有效期「$timeout 为多少秒过期」「私有 bucket 才可看见效果」
-$url = $disk->getAdapter()->getTemporaryUrl('cat.png', $timeout, ['x-oss-process' => 'image/circle,r_100']);
+$url = $disk->signUrl('cat.png', $timeout, ['x-oss-process' => 'image/circle,r_100']);
+
+// 和 signurl 功能一样，区别在于 $expiration 是未来过期时间如：2019-05-05 17:50:32 时链接失效
+$url = $disk->getTemporaryUrl('file.md', $expiration);
 
 // 可切换其他 bucket「需要在 config 配置文件中配置 buckets」
-$exists = $disk->getAdapter()->bucket('test')->xxx('file.jpg');
+$exists = $disk->bucket('test')->has('file.jpg');
 ```
 
 ## 获取官方完整 OSS 处理能力
@@ -114,7 +129,7 @@ $exists = $disk->getAdapter()->bucket('test')->xxx('file.jpg');
 
 ```php
 // 获取完整处理能力
-$kernel = $disk->getAdapter()->ossKernel();
+$kernel = $disk->kernel();
 
 // 例如：防盗链功能
 $refererConfig = new RefererConfig();
@@ -140,7 +155,7 @@ oss 直传有三种方式，当前扩展包使用的是最完整的 [服务端�
  * 3. 回调自定义参数，oss 回传应用服务器时会带上
  * 4. 当前直传配置链接有效期
  */
-$config = $disk->getAdapter()->signatureConfig($prefix = '/', $callBackUrl = '', $customData = [], $expire = 30);
+$config = $disk->signatureConfig($prefix = '/', $callBackUrl = '', $customData = [], $expire = 30);
 ```
 
 ## 直传回调验签
@@ -154,8 +169,8 @@ $config = $disk->getAdapter()->signatureConfig($prefix = '/', $callBackUrl = '',
 ```php
 // 验签，就是如此简单
 // $verify 验签结果，$data 回调数据
-list($verify, $data) = $disk->getAdapter()->verify();
-// [$verify, $data] = $disk->getAdapter()->verify(); // php 7.1 +
+list($verify, $data) = $disk->verify();
+// [$verify, $data] = $disk->verify(); // php 7.1 +
 
 if (!$verify) {
     // 验证失败处理，此时 $data 为验签失败提示信息
