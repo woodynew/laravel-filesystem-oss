@@ -3,8 +3,8 @@
   "description": "Oss storage filesystem for Laravel.",
   "license": "MIT",
   "authors": [{
-    "name": "woodynew",
-    "email": "woodywong@vip.qq.com"
+    "name": "iidestiny",
+    "email": "iidestiny@vip.qq.com"
   }],
   "require": {
     "php": "^7.0|^8.0",
@@ -12,13 +12,13 @@
   },
   "autoload": {
     "psr-4": {
-      "WoodyNew\\LaravelFilesystemOss\\": "src"
+      "Iidestiny\\LaravelFilesystemOss\\": "src"
     }
   },
   "extra": {
     "laravel": {
       "providers": [
-        "WoodyNew\\LaravelFilesystemOss\\OssStorageServiceProvider"
+        "Iidestiny\\LaravelFilesystemOss\\OssStorageServiceProvider"
       ]
     }
   }
