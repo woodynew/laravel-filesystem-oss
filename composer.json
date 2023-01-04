@@ -4,8 +4,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "woodynew",
-            "email": "woodywong@vip.qq.com"
+            "name": "iidestiny",
+            "email": "iidestiny@vip.qq.com"
         }
     ],
     "require": {
@@ -15,13 +15,13 @@
     },
     "autoload": {
         "psr-4": {
-            "WoodyNew\\LaravelFilesystemOss\\": "src"
+            "Iidestiny\\LaravelFilesystemOss\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "WoodyNew\\LaravelFilesystemOss\\OssStorageServiceProvider"
+                "Iidestiny\\LaravelFilesystemOss\\OssStorageServiceProvider"
             ]
         }
     }
